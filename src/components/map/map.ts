@@ -7,6 +7,7 @@ import {
   GoogleMapsMarkerOptions,
   GoogleMapsMarker, AnimateCameraOptions
 } from 'ionic-native';
+import { Events } from 'ionic-angular';
 
 @Component({
   selector: 'map',
@@ -14,8 +15,13 @@ import {
 })
 export class Map {
   map: GoogleMap;
-  constructor() {
-
+  constructor(public events: Events) {
+    events.subscribe('menu:opened', () => {
+      this.map.setClickable(false);
+    });
+    events.subscribe('menu:closed', () => {
+      this.map.setClickable(true);
+    });
   }
 
   ngAfterViewInit() {
@@ -27,10 +33,10 @@ export class Map {
 
     this.map = new GoogleMap(element);
     this.map.setMyLocationEnabled(true);
+    this.map.setClickable(true);
 
     this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
       console.log('Map is ready!');
-      console.log('Map: ', this.map);
     })
       .catch(err => console.log("Error: ", err));
 
@@ -40,24 +46,10 @@ export class Map {
 
   locateMe() {
     this.map.getMyLocation().then((location) => {
-      console.log('My locaation: ', location);
-      var msg = ["Current your location:\n",
-        "latitude:" + location.latLng.lat,
-        "longitude:" + location.latLng.lng,
-        "speed:" + location.speed,
-        "time:" + location.time,
-        "bearing:" + location.bearing].join("\n");
-      let markerOptions: GoogleMapsMarkerOptions = {
-        'position': location.latLng,
-        'title': msg
-      };
-      this.map.addMarker(markerOptions).then((marker: GoogleMapsMarker) => {
-        marker.showInfoWindow();
-      });
       let myLocation: GoogleMapsLatLng = new GoogleMapsLatLng(location.latLng.lat, location.latLng.lng);
       let position: AnimateCameraOptions = {
         target: myLocation,
-        zoom: 18,
+        zoom: 17,
         tilt: 30,
         duration: 1000
       };

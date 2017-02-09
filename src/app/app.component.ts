@@ -6,6 +6,7 @@ import { StatusBar, Splashscreen } from 'ionic-native';
 
 import { HomePage } from '../pages/home/home';
 
+import { Events } from 'ionic-angular';
 
 @Component({
   templateUrl: 'app.html'
@@ -19,7 +20,8 @@ export class MyApp {
 
   constructor(
     public platform: Platform,
-    public menu: MenuController
+    public menu: MenuController,
+    public events: Events
   ) {
     this.initializeApp();
 
@@ -43,5 +45,12 @@ export class MyApp {
     this.menu.close();
     // navigate to the new page if it is not the current page
     this.nav.setRoot(page.component);
+  }
+
+  menuOpened() {
+    this.events.publish('menu:opened', '');
+  }
+  menuClosed() {
+    this.events.publish('menu:closed', '');
   }
 }
