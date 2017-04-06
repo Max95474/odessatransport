@@ -1,0 +1,6 @@
+<ion-spinner *ngIf="!routes"></ion-spinner>
+<ion-list *ngIf="routes">
+  <ion-item *ngFor="let route of routes" (click)="openRoute(route.id)">
+    {{route.title + ' ' + route.Number}}
+  </ion-item>
+</ion-list>

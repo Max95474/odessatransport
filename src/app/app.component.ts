@@ -5,6 +5,7 @@ import { Platform, MenuController, Nav } from 'ionic-angular';
 import { StatusBar, Splashscreen } from 'ionic-native';
 
 import { HomePage } from '../pages/home/home';
+import { RoutesPage } from '../pages/routes/routes';
 
 import { Events } from 'ionic-angular';
 
@@ -27,7 +28,8 @@ export class MyApp {
 
     // set our app's pages
     this.pages = [
-      { title: 'Menu item', component: HomePage }
+      { title: 'Map', component: HomePage },
+      { title: 'Routes', component: RoutesPage }
     ];
   }
 
