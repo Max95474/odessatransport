@@ -1,3 +1,4 @@
+import {Segment} from "./segment";
 export class Route {
   id: string;
   Number: number;
@@ -7,4 +8,5 @@ export class Route {
   distance: number;
   cost: number;
   last_update: Date;
+  segments: Array<Segment>;
 }

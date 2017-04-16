@@ -23,18 +23,13 @@ export class RoutesList {
     // this.loading.present();
     loader.loadRoutes().then(routes => {
       this.routes = routes;
-      try {
-        // this.loading.dismiss();
-      } catch(err) {
-        console.log('Loading dismiss error: ', err);
-      }
-      console.log('Loaded routes: ', this.routes);
+      // this.loading.dismiss();
     }).catch(err => {
       console.log("Error: ", err);
       // this.loading.dismiss();
     })
   }
   openRoute(routeId) {
-    this.navCtrl.push(HomePage)
+    this.navCtrl.push(HomePage, {routeId})
   }
 }

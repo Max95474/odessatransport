@@ -6,6 +6,7 @@ import { RoutesPage } from '../pages/routes/routes';
 import { Map } from '../components/map/map';
 import { RoutesList } from '../components/routes_list/routes_list';
 import { Loader } from "../services/Loader";
+import { RoutesService } from "../services/RoutesService";
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { Loader } from "../services/Loader";
   ],
   providers: [
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    Loader
+    Loader,
+    RoutesService
   ]
 })
 export class AppModule {}

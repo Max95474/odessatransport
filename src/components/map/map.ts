@@ -3,11 +3,13 @@ import {
   GoogleMap,
   GoogleMapsEvent,
   GoogleMapsLatLng,
-  CameraPosition,
-  GoogleMapsMarkerOptions,
-  GoogleMapsMarker, AnimateCameraOptions
+  // CameraPosition,
+  // GoogleMapsMarkerOptions,
+  // GoogleMapsMarker,
+  AnimateCameraOptions
 } from 'ionic-native';
-import { Events } from 'ionic-angular';
+import { Events, NavParams } from 'ionic-angular';
+import { RoutesService } from "../../services/RoutesService";
 
 @Component({
   selector: 'map',
@@ -15,7 +17,13 @@ import { Events } from 'ionic-angular';
 })
 export class Map {
   map: GoogleMap;
-  constructor(public events: Events) {
+  constructor(public events: Events,
+              private navParams: NavParams,
+              private routesService: RoutesService) {
+    const routeId = this.navParams.get('routeId');
+    if(routeId) {
+      this.showRoute(routeId);
+    }
     events.subscribe('menu:opened', () => {
       this.map.setClickable(false);
     });
@@ -43,7 +51,6 @@ export class Map {
     this.map.on(GoogleMapsEvent.MY_LOCATION_BUTTON_CLICK)
       .subscribe((evt) => this.locateMe());
   }
-
   locateMe() {
     this.map.getMyLocation().then((location) => {
       let myLocation: GoogleMapsLatLng = new GoogleMapsLatLng(location.latLng.lat, location.latLng.lng);
@@ -57,5 +64,10 @@ export class Map {
     }).catch(err => {
       console.log('Error: ', err);
     });
+  }
+  showRoute(id: string) {
+    this.routesService.getRouteById(id)
+      .then(route => console.log('Route to show: ', route))
+      .catch(err => console.log("Error: ", err))
   }
 }
