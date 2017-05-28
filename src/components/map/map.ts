@@ -6,10 +6,14 @@ import {
   // CameraPosition,
   // GoogleMapsMarkerOptions,
   // GoogleMapsMarker,
-  AnimateCameraOptions
+  AnimateCameraOptions,
+  GoogleMapsPolyline, GoogleMapsMarkerOptions, GoogleMapsMarker
 } from 'ionic-native';
 import { Events, NavParams } from 'ionic-angular';
 import { RoutesService } from "../../services/RoutesService";
+import {Segment} from "../../models/segment";
+import {Route} from "../../models/route";
+import {State} from "../../models/state";
 
 @Component({
   selector: 'map',
@@ -17,23 +21,35 @@ import { RoutesService } from "../../services/RoutesService";
 })
 export class Map {
   map: GoogleMap;
+  routeId: string;
+  routeLine: GoogleMapsPolyline;
+  currentRoute: Route;
+  transportStates: Array<State>;
+  stateMarkers: Array<any> = [];
+  updateInterval: any;
   constructor(public events: Events,
               private navParams: NavParams,
               private routesService: RoutesService) {
-    const routeId = this.navParams.get('routeId');
-    if(routeId) {
-      this.showRoute(routeId);
-    }
+    this.routeId = this.navParams.get('routeId');
+
     events.subscribe('menu:opened', () => {
-      this.map.setClickable(false);
+      if(this.map) this.map.setClickable(false);
     });
     events.subscribe('menu:closed', () => {
-      this.map.setClickable(true);
+      if(this.map) this.map.setClickable(true);
     });
   }
 
   ngAfterViewInit() {
     this.loadMap();
+    if(this.routeId) {
+      this.showRoute(this.routeId);
+    }
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.updateInterval);
+    this.map.clear();
   }
 
   loadMap() {
@@ -66,8 +82,49 @@ export class Map {
     });
   }
   showRoute(id: string) {
+    this.map.clear();
     this.routesService.getRouteById(id)
-      .then(route => console.log('Route to show: ', route))
+      .then(route => {
+        this.currentRoute = route;
+        let odessa: GoogleMapsLatLng = new GoogleMapsLatLng(46.451117, 30.734253);
+        route.segments.forEach(segment => this.showSegment(segment));
+        const position: AnimateCameraOptions = {
+          target: odessa,
+          zoom: 12,
+          tilt: 30,
+          duration: 1000
+        };
+        this.map.animateCamera(position).then(() => console.log('Camera moved'));
+        this.updateInterval = setInterval(() => this.updateState(), 7000);
+      })
+      .catch(err => console.log("Error: ", err))
+  }
+  private showSegment(segment: Segment) {
+    this.map.addPolyline({
+      points: segment.points.map(point => new GoogleMapsLatLng(point.lat, point.lng)),
+      'color' : '#005EFF',
+      'width': 3,
+      'geodesic': true
+    }).then(polyline => this.routeLine = polyline);
+  }
+  private updateState() {
+    console.log('Updating state...');
+    this.routesService.getState(this.currentRoute.transport.map(transport => transport.id))
+      .then(states => {
+        this.stateMarkers.forEach(marker => marker.remove());
+        Promise.all(states.map(state => {
+          const markerOptions: GoogleMapsMarkerOptions = ({
+            position: new GoogleMapsLatLng(parseFloat(state.lat), parseFloat(state.lng)),
+            title: `${state.speed} km/h - ${state.ts}`
+          });
+          return this.map.addMarker(markerOptions)
+            .then(marker => {
+              console.log('Marker: ', marker);
+              this.stateMarkers.push(marker);
+              return marker;
+            })
+        })).then(markers => this.transportStates = markers)
+      })
       .catch(err => console.log("Error: ", err))
   }
 }

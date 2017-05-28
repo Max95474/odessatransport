@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
-import { NavController, LoadingController } from 'ionic-angular';
+import { NavController,
+         LoadingController,
+         ToastController } from 'ionic-angular';
 import { Loader } from "../../services/Loader";
 import { Route } from "../../models/route";
 import { HomePage } from "../../pages/home/home";
@@ -10,10 +12,12 @@ import { HomePage } from "../../pages/home/home";
 })
 export class RoutesList {
   private routes: Array<Route>;
+  private error: String;
   // private loading: any;
   constructor(public navCtrl: NavController,
               public loadingCtrl: LoadingController,
-              public loader: Loader) {
+              public loader: Loader,
+              public toastCtrl: ToastController) {
     // TODO: update ionic to fix error with loading.dismiss()
     // this.loading = this.loadingCtrl.create({
     //   content: 'Loading routes...',
@@ -25,7 +29,12 @@ export class RoutesList {
       this.routes = routes;
       // this.loading.dismiss();
     }).catch(err => {
-      console.log("Error: ", err);
+      this.error = `Error loading routes: ${err.statusText}`;
+      let toast = this.toastCtrl.create({
+        message: 'Cannot load routes',
+        duration: 3000
+      });
+      toast.present();
       // this.loading.dismiss();
     })
   }

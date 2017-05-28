@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {Route} from "../models/route";
 import {Loader} from "./Loader";
+import {State} from "../models/state";
 
 @Injectable()
 export class RoutesService {
@@ -18,5 +19,8 @@ export class RoutesService {
           resolve(route)
         }).catch(err => reject(err))
     })
+  }
+  getState(transportKeys: Array<string>): Promise<Array<State>> {
+    return this.loader.getState(transportKeys)
   }
 }
