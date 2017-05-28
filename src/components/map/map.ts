@@ -25,7 +25,7 @@ export class Map {
   routeLine: GoogleMapsPolyline;
   currentRoute: Route;
   transportStates: Array<State>;
-  stateMarkers: Array<any> = [];
+  stateMarkers: Array<GoogleMapsMarker> = [];
   updateInterval: any;
   constructor(public events: Events,
               private navParams: NavParams,
@@ -119,7 +119,6 @@ export class Map {
           });
           return this.map.addMarker(markerOptions)
             .then(marker => {
-              console.log('Marker: ', marker);
               this.stateMarkers.push(marker);
               return marker;
             })

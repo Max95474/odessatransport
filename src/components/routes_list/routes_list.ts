@@ -13,6 +13,8 @@ import { HomePage } from "../../pages/home/home";
 export class RoutesList {
   private routes: Array<Route>;
   private error: String;
+  private trams: Array<Route> = [];
+  private trolleybuses: Array<Route> = [];
   // private loading: any;
   constructor(public navCtrl: NavController,
               public loadingCtrl: LoadingController,
@@ -27,6 +29,15 @@ export class RoutesList {
     // this.loading.present();
     loader.loadRoutes().then(routes => {
       this.routes = routes;
+      this.routes.forEach(route => {
+        if(route.Type === 'tram') {
+          route.title = `Tram ${route.Number}`;
+          this.trams.push(route);
+        } else if(route.Type === 'trolleybuses') {
+          route.title = `Trolleybus ${route.Number}`;
+          this.trolleybuses.push(route);
+        }
+      });
       // this.loading.dismiss();
     }).catch(err => {
       this.error = `Error loading routes: ${err.statusText}`;

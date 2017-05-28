@@ -1,7 +1,14 @@
 <ion-spinner *ngIf="!routes && !error"></ion-spinner>
+<ion-item-divider color="light">Trams</ion-item-divider>
 <ion-list *ngIf="routes">
-  <ion-item *ngFor="let route of routes" (click)="openRoute(route.id)">
-    {{route.title + ' ' + route.Number}}
+  <ion-item *ngFor="let route of trams" (click)="openRoute(route.id)">
+    {{route.title}}
+  </ion-item>
+</ion-list>
+<ion-item-divider color="light">Trolleybuses</ion-item-divider>
+<ion-list *ngIf="routes">
+  <ion-item *ngFor="let route of trolleybuses" (click)="openRoute(route.id)">
+    {{route.title}}
   </ion-item>
 </ion-list>
 <span *ngIf="error">{{error}}</span>
